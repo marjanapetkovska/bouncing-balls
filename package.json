@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "babel": "babel js/main.js --presets @babel/preset-env",
+    "babel": "babel js/main.js --presets @babel/preset-env -o build/main.js",
+    "browserify": "browserify js/main.js --presets @babel/preset-env -o build/main.js",
     "start": "http-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,10 +15,24 @@
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
-    "@babel/preset-es2015": "^7.0.0-beta.53"
+    "@babel/preset-es2015": "^7.0.0-beta.53",
+    "babelify": "^10.0.0",
+    "browserify": "^16.5.0"
   },
   "dependencies": {
     "@babel/polyfill": "^7.8.7",
     "http-server": "^0.12.1"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "@babel/preset-env"
+          ]
+        }
+      ]
+    ]
   }
 }

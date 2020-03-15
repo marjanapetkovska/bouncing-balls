@@ -4,7 +4,11 @@
       "@babel/preset-env",
       {
         "targets": {
-          "esmodules": true
+          "esmodules": true,
+          "modules": false
+        },
+        "browserify": {
+          "transform": [["babelify", { "presets": ["@babel/preset-env"] }]]
         }
       }
     ]

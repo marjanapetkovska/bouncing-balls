@@ -1,114 +1,117 @@
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
-  if (Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object);
-    if (enumerableOnly)
-      symbols = symbols.filter(function(sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-    keys.push.apply(keys, symbols);
-  }
-  return keys;
-}
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Ball = void 0;
 
-function _objectSpread(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-    if (i % 2) {
-      ownKeys(Object(source), true).forEach(function(key) {
-        _defineProperty(target, key, source[key]);
-      });
-    } else if (Object.getOwnPropertyDescriptors) {
-      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-    } else {
-      ownKeys(Object(source)).forEach(function(key) {
-        Object.defineProperty(
-          target,
-          key,
-          Object.getOwnPropertyDescriptor(source, key)
-        );
-      });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var GRAVITY = 9.81;
+var RADIUS = 5;
+var COLOR = "#000000";
+
+var Ball = /*#__PURE__*/function () {
+  function Ball(x, y) {
+    _classCallCheck(this, Ball);
+
+    this.x = x;
+    this.y = y;
+    this.x0 = x;
+    this.y0 = y;
+    this.t = 0;
+    this.angle = this.getRandomNum(15, 80);
+    this.velocity = this.getRandomNum(1, 80); //50-80
+  }
+
+  _createClass(Ball, [{
+    key: "drawBall",
+    value: function drawBall(context) {
+      context.beginPath();
+      context.fillStyle = COLOR; // Draws a circle at (x, y) coordinates with given radius
+
+      context.arc(this.x, this.y, RADIUS, 0, Math.PI * 2, true);
+      context.closePath();
+      context.fill();
     }
-  }
-  return target;
-}
+  }, {
+    key: "updateBall",
+    value: function updateBall(height) {
+      //x = X + v0*t*cos(Q)
+      //y = Y + v0*t*sin(Q) - 1/2g*t^2
+      var vx = this.velocity * Math.cos(this.angle * (Math.PI / 180));
+      var vy = this.velocity * Math.sin(this.angle * (Math.PI / 180));
+      var t = this.t + 0.02;
+      this.x = this.x0 + vx * t;
+      this.y = this.y0 - vy * t + GRAVITY / 2 * t * t;
+      this.t = t;
 
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
+      if (this.y >= height - RADIUS) {
+        this.bounce();
+      }
+    }
+  }, {
+    key: "bounce",
+    value: function bounce() {
+      this.y = -this.y;
+      this.x0 = this.x;
+      this.y0 = -this.y;
+      this.velocity = this.velocity - 5;
+      this.t = 0;
+    }
+  }, {
+    key: "getRandomNum",
+    value: function getRandomNum(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+  }]);
+
+  return Ball;
+}();
+
+exports.Ball = Ball;
+
+},{}],2:[function(require,module,exports){
+"use strict";
+
+var _ball = require("./ball");
 
 var context;
 var balls = [];
-var G = 9.81;
-var RADIUS = 5; //x = X + v0*t*cos(Q)
-//y = Y + v0*t*sin(Q) - 1/2g*t^2
 
 function drawBalls(balls) {
-  balls.forEach(function(b) {
-    context.beginPath();
-    context.fillStyle = "#000000"; // Draws a circle at (x, y) coordinates with radius 10
-
-    context.arc(b.x, b.y, RADIUS, 0, Math.PI * 2, true);
-    context.closePath();
-    context.fill();
+  balls.forEach(function (b) {
+    b.drawBall(context);
   });
 }
 
 function updateBalls(balls) {
-  return balls.map(function(b) {
-    var vx = b.velocity * Math.cos(b.angle * (Math.PI / 180));
-    var vy = b.velocity * Math.sin(b.angle * (Math.PI / 180));
-    var t = b.t + 0.02;
-    var x = b.x0 + vx * t;
-    var y = b.y0 - vy * t + (G / 2) * t * t;
-    var x0 = b.x0;
-    var y0 = b.y0;
-    var velocity = b.velocity;
-
-    if (y >= myCanvas.height - RADIUS) {
-      y = -y;
-      x0 = x;
-      y0 = -y;
-      velocity = velocity - 5;
-      t = 0;
-    }
-
-    return _objectSpread({}, b, {
-      t: t,
-      x: x,
-      y: y,
-      x0: x0,
-      y0: y0,
-      velocity: velocity
-    });
+  return balls.forEach(function (b) {
+    b.updateBall(myCanvas.height);
   });
 }
 
 function bounceBalls() {
   context.clearRect(0, 0, 600, 600);
-  drawBalls(balls);
-  balls = updateBalls(balls);
+
+  if (balls.length > 0) {
+    drawBalls(balls);
+    updateBalls(balls);
+  }
 }
 
 function init() {
   context = myCanvas.getContext("2d");
   setInterval(bounceBalls, 1000 / 180);
-  myCanvas.addEventListener("mousedown", function(e) {
+  myCanvas.addEventListener("mousedown", function (e) {
     var _getMousePosition = getMousePosition(myCanvas, e),
-      x = _getMousePosition.x,
-      y = _getMousePosition.y;
+        x = _getMousePosition.x,
+        y = _getMousePosition.y;
 
     addBall(x, y);
   });
@@ -125,17 +128,12 @@ function getMousePosition(canvas, event) {
 }
 
 function addBall(x, y) {
-  balls.push({
-    x: x,
-    y: y,
-    x0: x,
-    y0: y,
-    t: 0,
-    angle: 80,
-    //Math.random() * 70,
-    velocity: 50 //80
-  });
+  var ball = new _ball.Ball(x, y);
+  balls.push(ball);
 }
-document.addEventListener("DOMContentLoaded", function() {
+
+document.addEventListener("DOMContentLoaded", function () {
   init();
 });
+
+},{"./ball":1}]},{},[2]);
