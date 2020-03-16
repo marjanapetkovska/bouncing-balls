@@ -1,16 +1,4 @@
 {
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          "esmodules": true,
-          "modules": false
-        },
-        "browserify": {
-          "transform": [["babelify", { "presets": ["@babel/preset-env"] }]]
-        }
-      }
-    ]
-  ]
+  "presets": ["@babel/preset-env"],
+  "plugins": ["@babel/plugin-proposal-class-properties"]
 }
